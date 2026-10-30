@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BaseAI – Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --text: #e6edf3;
+      --text-dim: #8b949e;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent-glow: rgba(88,166,255,0.15);
+      --success: #3fb950;
+      --radius: 10px;
+      --transition: all 0.3s ease;
+    }
+    [data-theme="light"] {
+      --bg: #ffffff;
+      --surface: #f6f8fa;
+      --text: #0d1117;
+      --text-dim: #57606a;
+      --border: #d0d7de;
+      --accent: #0969da;
+      --accent-glow: rgba(9,105,218,0.1);
+      --success: #2da44e;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 24px 120px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 80px;
+    }
+    h1 {
+      font-size: 3.8rem;
+      font-weight: 800;
+      letter-spacing: -1.2px;
+      background: linear-gradient(90deg, var(--accent), #a5d8ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+    }
+    .subtitle {
+      font-size: 1.3rem;
+      color: var(--text-dim);
+      margin-bottom: 32px;
+    }
+    .toc {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 64px;
+      padding: 16px;
+      background: var(--surface);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+    .toc a {
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-weight: 500;
+      transition: var(--transition);
+      background: rgba(88,166,255,0.05);
+    }
+    .toc a:hover {
+      background: var(--accent-glow);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    h2 {
+      font-size: 2.6rem;
+      font-weight: 700;
+      margin: 80px 0 32px;
+      color: var(--accent);
+      position: relative;
+      padding-bottom: 12px;
+    }
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 80px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      border-radius: 3px;
+    }
+    h3 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin: 56px 0 20px;
+      color: var(--text);
+    }
+    p, li {
+      font-size: 1.1rem;
+      color: var(--text-dim);
+      margin-bottom: 1.6em;
+    }
+    strong { color: var(--text); font-weight: 600; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      margin: 40px 0;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    ul.achievements {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin: 32px 0;
+    }
+    ul.achievements li {
+      background: rgba(88,166,255,0.05);
+      border: 1px solid rgba(88,166,255,0.15);
+      border-radius: 12px;
+      padding: 20px 24px;
+      font-size: 1.05rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: var(--transition);
+    }
+    ul.achievements li:hover {
+      background: rgba(88,166,255,0.12);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    ul.achievements li::before {
+      content: '→';
+      color: var(--accent);
+      font-weight: bold;
+      font-size: 1.4rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 32px 0;
+      font-size: 1rem;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    th {
+      background: rgba(88,166,255,0.1);
+      color: var(--accent);
+      font-weight: 600;
+      padding: 16px 20px;
+      text-align: left;
+    }
+    td {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      color: var(--text-dim);
+    }
+    tr:last-child td { border-bottom: none; }
+
+    .theme-toggle {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.4rem;
+      z-index: 1000;
+      transition: var(--transition);
+    }
+    .theme-toggle:hover { transform: scale(1.1); }
+
+    @media (max-width: 768px) {
+      .container { padding: 40px 16px; }
+      h1 { font-size: 2.8rem; }
+      h2 { font-size: 2.2rem; }
+      .toc { flex-direction: column; gap: 12px; padding: 12px; }
+      .card { padding: 28px; }
+      ul.achievements { grid-template-columns: 1fr; }
+    }
+.back-home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: rgba(88,166,255,0.05);
+  transition: var(--transition);
+}
+.back-home-btn:hover {
+  background: var(--accent-glow);
+  color: white;
+  transform: translateY(-2px);
+}
+  </style>
+</head>
+<body>
+
+  <div class="theme-toggle" onclick="toggleTheme()">☀️</div>
+
+  <div class="container">
+    <header>
+      <h1>BaseAI Documentation</h1>
+<div style="margin: 16px 0;">
+  <a href="/" class="back-home-btn">
+    ← Back to Main Site
+  </a>
+</div>
+      <div class="subtitle">Roadmap • Tokenomics • zkML • January 2026</div>
+
+      <nav class="toc">
+        <a href="#overview">Overview</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#zkml">zkML Explained</a>
+        <a href="#tokenomics">Tokenomics</a>
+        <a href="#risks">Risks</a>
+        <a href="#glossary">Glossary</a>
+      </nav>
+    </header>
+
+    <div class="card" id="overview">
+      <h2>Overview</h2>
+      <p>BaseAI combines decentralized GPU compute (DePIN), AI inference, zero-knowledge machine learning (zkML), and autonomous agents into a unified DeFi protocol built on Base (Optimism Layer 2).</p>
+      <p>The ultimate goal is to create a self-evolving, AI-native financial ecosystem with <strong>> $55 million TVL</strong> by the end of 2026, where AI agents manage capital, verify computations, optimize yields, and govern the protocol in a fully decentralized manner.</p>
+    </div>
+
+    <div class="card" id="roadmap">
+      <h2>Phase-by-Phase Roadmap</h2>
+
+      <h3>Phase 1 – Genesis & Node Foundation</h3>
+      <p><strong>Status:</strong> LIVE | <strong>Timeframe:</strong> Q1 2026 (January – March)</p>
+      <p><strong>Objective:</strong> Establish the foundational layer of the protocol: bootstrap a global decentralized GPU network (DePIN), launch staking mechanics to secure the network, distribute early-access rewards (Genesis Badges), and demonstrate real-world AI inference integrated with DeFi primitives.</p>
+      <p><strong>Key Achievements (as of current snapshot – January 2026):</strong></p>
+      <ul class="achievements">
+        <li>1,842 active compute nodes onboarded (mix of enterprise-grade H100 clusters, A100 singles, and consumer RTX 4090 farms)</li>
+        <li>$84.2 million TVL across staking pools and early liquidity</li>
+        <li>840,000 AI inferences successfully processed in the AI-DeFi beta environment</li>
+        <li>Genesis Badge program: 1,500 out of limited early supply claimed (NFT-based early access token with staking/governance multipliers)</li>
+        <li>Node CLI tool: 500+ downloads (command-line interface for node operators to join the network)</li>
+        <li>Staking V1: $42.5 million locked, delivering ~24.2% APY from real AI workload revenue</li>
+        <li>Security audit: 100% complete by top-tier auditor — no critical or high-severity issues found</li>
+      </ul>
+
+      <h3>Phase 2 – Inference Marketplace</h3>
+      <p><strong>Timeline:</strong> Q2 2026 (April – June)</p>
+      <p><strong>Objective:</strong> Launch a fully open, permissionless marketplace for AI inference — the first liquid, on-chain market where users, developers, and agents can buy/sell compute instantly, with DeFi-native settlement.</p>
+      <p><strong>Key Expected Milestones:</strong></p>
+      <ul>
+        <li>Public mainnet launch of the Inference Marketplace</li>
+        <li>Target daily trading volume > $50 million within first 3 months</li>
+        <li>SDK adoption: 10,000+ integrations by developers and protocols</li>
+        <li>Advanced bidding engine achieving 99.9% execution efficiency</li>
+        <li>Model Registry: at least 842 high-quality models indexed and available</li>
+        <li>Latency optimization layer → < 1 second end-to-end inference for most workloads</li>
+      </ul>
+
+      <h3>Phase 3 – zkML & Verifiable DeFi</h3>
+      <p><strong>Timeline:</strong> Q3 2026 (July – September)</p>
+      <p><strong>Objective:</strong> Bring zero-knowledge machine learning (zkML) to production — enabling private, fully verifiable AI computations that can be used inside smart contracts without revealing inputs, models, or outputs.</p>
+      <p><strong>Key Expected Milestones:</strong></p>
+      <ul>
+        <li>Production-grade zk-SNARK proofs for common inference tasks</li>
+        <li>100% on-chain verifiable AI outputs (no trust in off-chain oracles)</li>
+        <li>Enterprise-ready privacy-preserving streams</li>
+        <li>Cross-chain interoperability via Optimism Bridge</li>
+        <li>DAO scaling → ≥ 10,000 active voters</li>
+        <li>Post-launch TVL target: $75 million+</li>
+      </ul>
+
+      <h3>Phase 4 – Autonomous AI-DeFi Agents</h3>
+      <p><strong>Timeline:</strong> Q4 2026 (October – December)</p>
+      <p><strong>Objective:</strong> Achieve full protocol autonomy: launch self-sustaining, goal-directed AI agents that manage treasury, execute complex DeFi strategies, optimize yields, and propose governance changes — forming the backbone of a $100 billion+ AI-native economy.</p>
+      <p><strong>Key Expected Milestones:</strong></p>
+      <ul>
+        <li>Launch of production-ready Autonomous Agent Framework</li>
+        <li>Full DAO ownership and control transfer from multisig to on-chain governance</li>
+        <li>Agent SDK adoption: 50,000+ developers and users</li>
+        <li>Multi-chain bridging infrastructure</li>
+        <li>DePIN network scale → ≥ 5,000 active nodes</li>
+        <li>Long-term vision realized: self-evolving economy with AI agents managing capital at scale</li>
+      </ul>
+    </div>
+
+    <div class="card" id="zkml">
+      <h2>What is zkML? Detailed Explanation</h2>
+      <p><strong>zkML</strong> (Zero-Knowledge Machine Learning) is a groundbreaking technology that combines machine learning with zero-knowledge proofs (ZKP). It allows you to mathematically prove that an AI model correctly processed input data and produced a specific output — without revealing the input data, the model weights, or any intermediate computations.</p>
+      <p>In simple terms: zkML turns AI into a verifiable "black box". You can trust the result on-chain without trusting the off-chain computation. This is critical for DeFi, where AI is used for predictive yields, risk scoring, automated trading, and agent decisions — but trustlessness is non-negotiable.</p>
+
+      <h3>Why zkML Matters in 2026</h3>
+      <ul>
+        <li>AI in DeFi is exploding: agents trade, score risks, generate assets — but how do you prove the model wasn't manipulated?</li>
+        <li>Privacy: Your portfolio, transactions, or strategy remain completely hidden.</li>
+        <li>Scalability: Heavy ML runs off-chain (cheap/fast), while tiny proofs (~1KB) are verified on-chain for pennies (Base L2 gas ~$0.01).</li>
+        <li>Real progress: EZKL proves nanoGPT in minutes on GPU; Modulus Labs verifies GPT-2; Cysic ASICs speed up 50x; projects like Worldcoin, Lagrange, Gaianet already use zkML in production.</li>
+      </ul>
+
+      <h3>How zkML Works Step-by-Step</h3>
+      <ol>
+        <li><strong>Classical ML (without zk):</strong> Model M + Input I → Output O. Problem: No one can verify if M was applied correctly to I.</li>
+        <li><strong>zkML adds ZKP:</strong>
+          <ul>
+            <li><strong>Prover</strong> (off-chain): Runs inference on M(I) = O, generates a cryptographic proof that "I correctly applied M to I and got O".</li>
+            <li>ML operations (matrix multiplications, ReLU, softmax) are converted into arithmetic circuits/polynomials over finite fields.</li>
+            <li>Tools: EZKL (GPU-accelerated, Python-friendly), zkLLM (for LLMs), Circom/Noir (circuit DSLs).</li>
+          </ul>
+        </li>
+        <li><strong>Verifier</strong> (on-chain): Receives proof + public O → checks validity in milliseconds. If valid → accept O (e.g., approve loan, execute trade).</li>
+      </ol>
+
+      <h3>Mathematical Core (Simplified)</h3>
+      <p>The proof is a ZK-SNARK/STARK statement:</p>
+      <pre>M(I) = O    (proven without revealing I or M internals)</pre>
+      <ul>
+        <li><strong>SNARKs</strong> (Groth16/Plonk): Compact (~200 bytes), fast verification, but require trusted setup.</li>
+        <li><strong>STARKs</strong>: No setup, quantum-resistant, larger proofs (~kB).</li>
+        <li>Non-linear ops (ReLU, sigmoid) approximated via polynomials or lookup tables.</li>
+        <li>Constraint count: 10⁹–10¹² for large models like Llama-70B → minutes on GPU, seconds on ASIC.</li>
+      </ul>
+
+      <h3>Advantages of zkML</h3>
+      <table>
+        <tr><th>Benefit</th><th>Description</th><th>DeFi Example</th></tr>
+        <tr><td>Privacy</td><td>Inputs/model remain hidden</td><td>Private portfolio risk scoring</td></tr>
+        <tr><td>Verifiability</td><td>100% on-chain proof of correctness</td><td>Yield prediction with zk-proof</td></tr>
+        <tr><td>Trustless</td><td>No reliance on oracles or centralized servers</td><td>AI agents execute trades verifiably</td></tr>
+        <tr><td>Scalability</td><td>Off-chain compute + cheap on-chain verification</td><td>Thousands of inferences per second</td></tr>
+      </table>
+
+      <h3>Challenges & Solutions (2026 Reality)</h3>
+      <table>
+        <tr><th>Challenge</th><th>Details</th><th>Current Solutions</th></tr>
+        <tr><td>High compute cost</td><td>Proof generation: minutes–hours for big models</td><td>GPU acceleration (EZKL), ASICs (Cysic C1), distributed provers</td></tr>
+        <tr><td>Non-linearity</td><td>ReLU/softmax hard to arithmetize</td><td>Lookup tables, Taylor approximations, zk-friendly activations</td></tr>
+        <tr><td>Proof size / gas</td><td>Large proofs increase on-chain cost</td><td>Recursive SNARKs, L2 compression, Base/OP cheap gas</td></tr>
+        <tr><td>Model transparency</td><td>Circuit requires public model</td><td>Open-weights (Llama) + private fine-tuning</td></tr>
+      </table>
+
+      <h3>Real-World Use Cases in DeFi & AI (2025–2026)</h3>
+      <ul>
+        <li><strong>Risk & Yield Prediction</strong>: zk-proof of AI score without exposing portfolio</li>
+        <li><strong>Autonomous Agents</strong>: Cysic NOYA agents trade with verifiable optimality</li>
+        <li><strong>Private Inference</strong>: Gaianet + Lagrange for chemistry/wallet management</li>
+        <li><strong>On-Chain AI</strong>: Modulus Labs Rocky Bot — verifiable swaps</li>
+        <li><strong>DAO & Compliance</strong>: zkML + ZKEmail for private voting</li>
+      </ul>
+
+      <h3>Future Outlook</h3>
+      <p>By late 2026 zkVMs (RISC Zero), zkDSLs (Noir/EZKL), and hardware (Cysic ASICs) will make real-time proofs for Llama-405B-scale models feasible. zkML becomes the standard for trustless AI in blockchain.</p>
+    </div>
+
+    <div class="card" id="tokenomics">
+      <h2>BAI Tokenomics – Deep Dive</h2>
+
+      <h3>Token Roles</h3>
+      <table>
+        <tr><th>Role</th><th>Description</th><th>Activation Phase</th></tr>
+        <tr><td>Gas & Inference Payment</td><td>Primary currency for paying AI compute</td><td>Phase 2</td></tr>
+        <tr><td>Staking & Security</td><td>Stake to secure network & earn from fees</td><td>Phase 1 (live)</td></tr>
+        <tr><td>Governance</td><td>Vote in DAO (weighted by stake + badges)</td><td>Phase 1 → full in Phase 3–4</td></tr>
+        <tr><td>Agent Fuel</td><td>Burn/spend for autonomous agent operations</td><td>Phase 4</td></tr>
+        <tr><td>Revenue Share</td><td>Portion of fees → buyback & burn / stakers</td><td>Phase 2+</td></tr>
+      </table>
+
+      <h3>Initial Distribution (Estimated at TGE)</h3>
+      <table>
+        <tr><th>Category</th><th>%</th><th>Vesting</th></tr>
+        <tr><td>Early Backers / Seed</td><td>15%</td><td>12–36 months linear</td></tr>
+        <tr><td>Team & Advisors</td><td>18%</td><td>24–48 months, 12-month cliff</td></tr>
+        <tr><td>Node Operators & Miners</td><td>22%</td><td>Emitted via node rewards</td></tr>
+        <tr><td>Ecosystem / Grants</td><td>18%</td><td>DAO treasury</td></tr>
+        <tr><td>Liquidity & Market Making</td><td>10%</td><td>50% at TGE</td></tr>
+        <tr><td>Staking Rewards</td><td>20%</td><td>Inflationary emission</td></tr>
+        <tr><td>Genesis / Airdrop</td><td>7%</td><td>Immediate or short cliff</td></tr>
+      </table>
+
+      <h3>Revenue Streams & Distribution (Phase 2+)</h3>
+      <table>
+        <tr><th>Source</th><th>Fee</th><th>Distribution</th></tr>
+        <tr><td>Inference Request</td><td>5–15%</td><td>30% nodes, 20% model creators, 30% treasury, 20% stakers</td></tr>
+        <tr><td>zkML Private Job</td><td>10–25%</td><td>40% treasury, 30% stakers, 30% burn</td></tr>
+        <tr><td>Agent Execution</td><td>2–8% of profit</td><td>50% burn, 30% treasury, 20% agent devs</td></tr>
+      </table>
+
+      <h3>Deflationary Mechanisms</h3>
+      <ul>
+        <li>Agent fuel burn (Phase 4)</li>
+        <li>Buyback & burn from treasury revenue (Phase 3+)</li>
+        <li>Protocol fees allocated to burn wallet</li>
+      </ul>
+    </div>
+
+    <div class="card" id="risks">
+      <h2>Risk Matrix</h2>
+      <table>
+        <tr><th>Risk Category</th><th>Description</th><th>Likelihood</th><th>Impact</th><th>Mitigation Strategy</th></tr>
+        <tr><td>Node centralization</td><td>Too few large node providers</td><td>Medium</td><td>High</td><td>Diverse hardware + geographic incentives</td></tr>
+        <tr><td>Inference quality</td><td>Poor model/node performance</td><td>Medium</td><td>High</td><td>Reputation system + slashing + user ratings</td></tr>
+        <tr><td>zkML circuit bugs</td><td>Flawed zero-knowledge proofs</td><td>Low</td><td>Critical</td><td>Multiple audits + formal verification + testnet phase</td></tr>
+        <tr><td>Regulatory pressure</td><td>Privacy / AI regulations</td><td>Medium</td><td>High</td><td>Privacy-first design + institutional compliance streams</td></tr>
+        <tr><td>Smart-contract exploits</td><td>Vulnerabilities in staking/market/agent code</td><td>Low</td><td>Critical</td><td>Continuous audits + bug bounty + progressive decentralization</td></tr>
+      </table>
+    </div>
+
+    <div class="card" id="glossary">
+      <h2>Glossary of Key Terms</h2>
+      <p>This glossary covers the core concepts used across BaseAI documentation. Terms are listed in alphabetical order.</p>
+
+      <dl>
+        <dt><strong>Agent SDK</strong></dt>
+        <dd>Software development kit for building and deploying autonomous AI agents on BaseAI. Includes tools for planning, tool-use, on-chain execution, and zk-verification (Phase 4 target: 50,000+ users).</dd>
+
+        <dt><strong>Autonomous Agent</strong></dt>
+        <dd>An AI entity capable of perceiving its environment, planning actions, using tools, executing on-chain transactions, and adapting goals without continuous human intervention. In Phase 4, agents manage treasury, optimize yields, and propose governance changes.</dd>
+
+        <dt><strong>Bidding Engine</strong></dt>
+        <dd>A real-time auction system in the Inference Marketplace that matches user inference requests with the optimal available compute node based on price, latency, and reliability.</dd>
+
+        <dt><strong>DAO Scaling</strong></dt>
+        <dd>Expansion of decentralized governance participation. Phase 3 target: ≥ 10,000 active voters; Phase 4 → full on-chain control with AI-assisted proposals.</dd>
+
+        <dt><strong>DePIN</strong></dt>
+        <dd>Decentralized Physical Infrastructure Network. A token-incentivized network of distributed physical hardware (in this case, GPUs) that provides compute resources to the protocol.</dd>
+
+        <dt><strong>Genesis Badge</strong></dt>
+        <dd>An early-access non-transferable NFT distributed during Phase 1. Holders receive boosted staking rewards, priority access to future features, and enhanced governance voting power.</dd>
+
+        <dt><strong>Inference</strong></dt>
+        <dd>The process of running a trained AI model on input data to generate outputs (predictions, text, images, etc.). Opposite of training. BaseAI's marketplace focuses on decentralized inference.</dd>
+
+        <dt><strong>Model Registry</strong></dt>
+        <dd>An on-chain catalog of available AI models, including metadata (version, creator, performance metrics, supported tasks), enabling discoverability and usage in the Inference Marketplace.</dd>
+
+        <dt><strong>Node CLI</strong></dt>
+        <dd>Command-line interface tool for node operators to easily join the DePIN network, register hardware, and start earning from inference tasks.</dd>
+
+        <dt><strong>Optimism Bridge</strong></dt>
+        <dd>Cross-chain bridge connecting Base (L2) to Ethereum mainnet and other Optimism-based chains, enabling asset and data transfer in Phase 3.</dd>
+
+        <dt><strong>Proof Verification</strong></dt>
+        <dd>The on-chain process of checking a zero-knowledge proof. In BaseAI, verification is gas-optimized to cost pennies on Base L2, enabling scalable zkML usage.</dd>
+
+        <dt><strong>Revenue Share</strong></dt>
+        <dd>Distribution of protocol fees (from inference, zkML jobs, agent execution) to node operators, model creators, stakers, and treasury (with portions burned for deflation).</dd>
+
+        <dt><strong>TVL (Total Value Locked)</strong></dt>
+        <dd>The total amount of assets committed to BaseAI contracts (staking pools, liquidity, agent-managed funds). A primary metric of protocol adoption and economic activity.</dd>
+
+        <dt><strong>zk-SNARK</strong></dt>
+        <dd>Zero-Knowledge Succinct Non-Interactive Argument of Knowledge — a widely used zero-knowledge proof system (Groth16, Plonk) that enables compact, fast-verifiable proofs. Used in zkML for on-chain verification.</dd>
+
+        <dt><strong>zkML (Zero-Knowledge Machine Learning)</strong></dt>
+        <dd>A cryptographic technique that proves correct execution of machine learning inference without revealing inputs, model weights, or intermediate computations. Enables private, verifiable AI in DeFi and autonomous agents.</dd>
+
+        <dt><strong>zkVM</strong></dt>
+        <dd>Zero-Knowledge Virtual Machine. A general-purpose zk-proof system (e.g., RISC Zero, zkWASM) that can execute arbitrary code (including ML models) and prove correctness. zkML often builds on zkVMs for flexibility.</dd>
+      </dl>
+    </div>
+  </div>
+
+  <script>
+    // Theme toggle
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+      document.querySelector('.theme-toggle').textContent = current === 'light' ? '☀️' : '🌙';
+    }
+
+    // Smooth scroll for TOC links
+    document.querySelectorAll('.toc a').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // Animate cards on scroll
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.card').forEach(card => observer.observe(card));
+  </script>
+
+</body>
+</html>
